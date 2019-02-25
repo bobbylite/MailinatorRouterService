@@ -5,13 +5,15 @@
     "main": "index.js",
     "scripts": {
         "tsc": "tsc",
-        "dev": "ts-node-dev --respawn --transpileOnly ./App/App.ts",
-        "prod": "tsc && node ./build/App.js"
+        "dev": "ts-node-dev --respawn --transpileOnly ./App/Infrastructure/DependencyInjection/Containers.ts",
+        "prod": "tsc && node ./build/Infrastructure/DependencyInjection/Containers.js"
     },
     "author": "",
     "license": "ISC",
     "dependencies": {
         "express": "^4.16.4",
+        "inversify": "^5.0.1",
+        "reflect-metadata": "^0.1.13",
         "ts-node-dev": "^1.0.0-pre.32",
         "typescript": "^3.3.3333"
     },
