@@ -12,8 +12,8 @@ Much thanks to Inversify for Inversion of control Dependency injection in this T
 
 Learned a lot from this article by Samuele Resca to get a basic IOC app up and running: https://medium.com/@samueleresca/inversion-of-control-and-dependency-injection-in-typescript-3040d568aabe Thank you! 
 
-Grunt + Typescript Boilerplate created with this article by Brian Love: http://brianflove.com/2016/11/08/typescript-2-express-node/
-Thank you Brian! 
+Typescript article by André Gardi: https://medium.com/javascript-in-plain-english/typescript-with-node-and-express-js-why-when-and-how-eb6bc73edd5d
+Thank you André! 
 
 ## Install
 
@@ -23,7 +23,7 @@ Install the node packages via:
 
 And then run the grunt task to compile the TypeScript:
 
-`$ npm run grunt`
+`$ npm run prod`
 
 ## Starting
 
@@ -35,7 +35,7 @@ To start the server run:
 
 While testing use the following command to compile and then serve the application. 
 
-`$ npm run rebuild`
+`$ npm run dev`
 
 To test the default get handler use the following curl command (Assuming curl is already installed).
 
