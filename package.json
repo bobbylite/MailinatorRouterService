@@ -1,0 +1,21 @@
+{
+    "name": "mailinatorrouterservice",
+    "version": "1.0.0",
+    "description": "Mailinaotor Temp Email Service Routes To Perminent Gmail",
+    "main": "index.js",
+    "scripts": {
+        "tsc": "tsc",
+        "dev": "ts-node-dev --respawn --transpileOnly ./App/App.ts",
+        "prod": "tsc && node ./build/App.js"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "express": "^4.16.4",
+        "ts-node-dev": "^1.0.0-pre.32",
+        "typescript": "^3.3.3333"
+    },
+    "devDependencies": {
+        "@types/express": "^4.16.1"
+    }
+}

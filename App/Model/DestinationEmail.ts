@@ -1,0 +1,1 @@
+export const PermanentEmail : string = "destinationAddress@example.com";
