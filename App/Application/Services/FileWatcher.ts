@@ -18,7 +18,7 @@ export class FileWatcher implements IFileWatcher {
     }
     
     public Watch() : void {
-        setInterval(async() => {
+        setInterval(async() : Promise<void> => {
             try {
                 if (await this.IsFIleFound() === false) {
                     this.OnFIleNotFOund();
