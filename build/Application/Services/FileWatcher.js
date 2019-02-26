@@ -51,26 +51,60 @@ var FilePath_1 = require("../../Model/FilePath");
 var FileWatcher = /** @class */ (function () {
     function FileWatcher() {
         this.FilePath = FilePath_1.FilePath;
-        this.FileWatcher = filewatcher_1.default();
+        this.FileWatch = filewatcher_1.default();
         this.FileFound = false;
     }
     FileWatcher.prototype.Watch = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var _a;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+        var _this = this;
+        setInterval(function () { return __awaiter(_this, void 0, void 0, function () {
+            var err_1;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
-                        if (!!this.FileFound) return [3 /*break*/, 2];
-                        console.log("File Not Found");
-                        _a = this;
-                        return [4 /*yield*/, file_exists_1.default(this.FilePath)];
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, this.IsFIleFound()];
                     case 1:
-                        _a.FileFound = _b.sent();
-                        return [3 /*break*/, 0];
-                    case 2: return [2 /*return*/];
+                        if ((_a.sent()) === false) {
+                            this.OnFIleNotFOund();
+                            return [2 /*return*/];
+                        }
+                        if (this.FileFound)
+                            return [2 /*return*/];
+                        this.OnFIleFound();
+                        return [3 /*break*/, 3];
+                    case 2:
+                        err_1 = _a.sent();
+                        return [3 /*break*/, 3];
+                    case 3: return [2 /*return*/];
+                }
+            });
+        }); }, 1000);
+    };
+    FileWatcher.prototype.IsFIleFound = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var doesFIleExist;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, file_exists_1.default(this.FilePath)];
+                    case 1:
+                        doesFIleExist = _a.sent();
+                        console.log("File Found: " + doesFIleExist);
+                        return [2 /*return*/, doesFIleExist];
                 }
             });
         });
+    };
+    FileWatcher.prototype.OnFIleNotFOund = function () {
+        this.FileFound = false;
+    };
+    FileWatcher.prototype.OnFIleFound = function () {
+        try {
+            this.FileFound = true;
+            console.log('OnFIleFOund()');
+            this.FileWatch.add(this.FilePath);
+        }
+        catch (err) {
+        }
     };
     FileWatcher = __decorate([
         inversify_1.injectable()

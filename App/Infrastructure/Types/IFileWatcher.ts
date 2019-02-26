@@ -1,8 +1,6 @@
-import { FileWatcher } from "../../Application/Services/FileWatcher";
-
 export interface IFileWatcher {
     FilePath: string;
-    FileWatcher: FileWatcher;
+    FileWatch: any;
     FileFound: boolean;
     Watch(): void;
 }
