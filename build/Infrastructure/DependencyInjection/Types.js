@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Types = {
-    IApp: Symbol("IApp")
+    IApplicationResolver: Symbol("IApplicationResolver"),
+    IService: Symbol("IService"),
+    IFileWatcher: Symbol("IFileWatcher")
 };
 exports.default = Types;

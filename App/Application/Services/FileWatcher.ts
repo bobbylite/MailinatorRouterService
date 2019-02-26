@@ -23,7 +23,5 @@ export class FileWatcher implements IFileWatcher {
             this.FileFound = await fileExists(this.FilePath);
         }
     }
-
-
 }
 
