@@ -12,6 +12,8 @@
     "license": "ISC",
     "dependencies": {
         "express": "^4.16.4",
+        "file-exists": "^5.0.1",
+        "filewatcher": "^3.0.1",
         "inversify": "^5.0.1",
         "reflect-metadata": "^0.1.13",
         "ts-node-dev": "^1.0.0-pre.32",

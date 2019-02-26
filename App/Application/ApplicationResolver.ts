@@ -2,8 +2,8 @@ import { IApplicationResolver } from "../Infrastructure/Types/IApplicationResolv
 import { injectable } from "inversify";
 import express = require("express");
 import { Builder } from "../Infrastructure/DependencyInjection/Containers";
-import { IService } from "../Services/Service";
 import Types from "../Infrastructure/DependencyInjection/Types";
+import { IFileWatcher } from "../Infrastructure/Types/IFileWatcher";
 
 @injectable()
 export class ApplicationResolver implements IApplicationResolver {
@@ -18,7 +18,7 @@ export class ApplicationResolver implements IApplicationResolver {
     }
 
     public InitializeComponents() {
-        
+        Builder.Get<IFileWatcher>(Types.IFileWatcher).Watch();
     }
 
     public InitializeServer() : void {
