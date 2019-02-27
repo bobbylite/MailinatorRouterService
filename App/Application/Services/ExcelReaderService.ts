@@ -4,6 +4,8 @@ import * as XLSX from "xlsx";
 
 @injectable()
 export class ExcelReaderService implements IExcelReaderService {
+
+    private PollingInterval: number = 1000;
     
     public async Read(file: string): Promise<void> {
         try {
@@ -17,8 +19,17 @@ export class ExcelReaderService implements IExcelReaderService {
         }
     }
 
-    private ParseWorkSheet(jsonData: object) : void {
-        console.log(jsonData);
+    private ParseWorkSheet(jsonData: any) : void {
+        jsonData.forEach((row: any, index: number) => {
+            try {
+                setTimeout(async() => {
+                    if (typeof row['EMAIL LABEL'] == 'undefined') return;
+                    console.log(row['EMAIL LABEL']);
+                }, this.PollingInterval * index);
+            } catch (err) {
+
+            }
+        });
     }
 
 }
