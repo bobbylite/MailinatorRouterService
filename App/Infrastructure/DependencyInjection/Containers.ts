@@ -4,8 +4,10 @@ import Types from "./Types";
 import { IApplicationResolver } from "../Types/IApplicationResolver";
 import { ApplicationResolver } from "../../Application/ApplicationResolver";
 import { Service, IService } from "../../Tests/Service";
-import { IFileWatcher } from "../Types/IFileWatcher";
-import { FileWatcher } from "../../Application/Services/FileWatcher";
+import { IFileWatcherService } from "../Types/IFileWatcherService";
+import { FileWatcherService } from "../../Application/Services/FileWatcherService";
+import { IExcelReaderService } from "../Types/IExcelReaderService";
+import { ExcelReaderService } from "../../Application/Services/ExcelReaderService";
 
 export class Builder {
 
@@ -25,11 +27,13 @@ export class Builder {
     }
 
     private InitializeApplicationResolver(builder: Container) : void {
-        builder.bind<IApplicationResolver>(Types.IApplicationResolver).toConstantValue(new ApplicationResolver);
+        builder.bind<IApplicationResolver>(Types.IApplicationResolver)
+        .toConstantValue(new ApplicationResolver(Builder.Get<IFileWatcherService>(Types.IFileWatcherService)));
     }
 
     private InitializeBindings(builder: Container) : void {
-        builder.bind<IFileWatcher>(Types.IFileWatcher).to(FileWatcher);
+        builder.bind<IExcelReaderService>(Types.IExcelReaderService).to(ExcelReaderService);
+        builder.bind<IFileWatcherService>(Types.IFileWatcherService).to(FileWatcherService);
         builder.bind<IService>(Types.IService).to(Service);
     }
 }

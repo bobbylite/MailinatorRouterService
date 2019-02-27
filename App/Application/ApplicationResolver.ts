@@ -1,9 +1,9 @@
 import { IApplicationResolver } from "../Infrastructure/Types/IApplicationResolver";
-import { injectable } from "inversify";
+import { injectable, inject } from "inversify";
 import express = require("express");
 import { Builder } from "../Infrastructure/DependencyInjection/Containers";
 import Types from "../Infrastructure/DependencyInjection/Types";
-import { IFileWatcher } from "../Infrastructure/Types/IFileWatcher";
+import { IFileWatcherService } from "../Infrastructure/Types/IFileWatcherService";
 
 @injectable()
 export class ApplicationResolver implements IApplicationResolver {
@@ -11,14 +11,16 @@ export class ApplicationResolver implements IApplicationResolver {
     public app: express.Application;
     private port: number = 8080;
 
-    public constructor() {
+    public constructor(
+        @inject(Types.IFileWatcherService) private FileWatcherService: IFileWatcherService
+    ) {
         this.app = express();
-        this.InitializeComponents();
         this.InitializeServer();
+        this.OnStart();
     }
 
-    public InitializeComponents() {
-        Builder.Get<IFileWatcher>(Types.IFileWatcher).Watch();
+    public OnStart() {
+        this.FileWatcherService.Watch();
     }
 
     public InitializeServer() : void {

@@ -1,7 +1,8 @@
 let Types : any = {
     IApplicationResolver: Symbol("IApplicationResolver"),
     IService: Symbol("IService"),
-    IFileWatcher: Symbol("IFileWatcher")
+    IFileWatcherService: Symbol("IFileWatcherService"),
+    IExcelReaderService: Symbol("IExcelReaderService")
 }
 
 export default Types;
