@@ -1,1 +1,1 @@
-export const PermanentEmail : string = "destinationAddress@example.com";
+export const DestinationEmail : string = "destinationAddress@example.com";

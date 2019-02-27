@@ -1,13 +1,10 @@
 # Mailinator Routing Micro Service 
-This is a simple solution for Mailinators temporary inbox.  You would use this micro service if you needed to send something to a public temporary email inbox and store the email you're looking for. 
+This is a simple solution for Mailinators temporary inbox.  This micro service reads a public temporary inbox hosted by Mailinator, and will retrieve a plain text or HTML email and forward it to a private email address.  Both the public temporary Mailinator inbox, and the permanent destination email inbox are configurable. 
 
-This was created to poll inboxes until it finds a specified piece of information in any given email in any given inbox. The information it is matching against can be specified (Subject, email content, sender address). Is bundled with NSSM to allow use as a windows service, as well.
-
-This project is currently loading a list of public temporary inboxes to poll from an excel sheet on a USB drive.  
-
+This was created to poll inboxes until it finds a specified piece of information in any given email in any given inbox. The information it is matching against can be specified (Subject, email content, sender address).
 
 ## A little bit about the project
-This is an IOC Event driven architecture. 
+This is an IOC DI architecture. 
 Much thanks to Inversify for Inversion of control Dependency injection in this Typescript mailing router micro service. 
 
 Learned a lot from this article by Samuele Resca to get a basic IOC app up and running: https://medium.com/@samueleresca/inversion-of-control-and-dependency-injection-in-typescript-3040d568aabe Thank you! 
@@ -21,15 +18,19 @@ Install the node packages via:
 
 `$ npm install --save`
 
-And then run the grunt task to compile the TypeScript:
+## Starting
+
+To start the app in production mode, first compile the TypeScript code:
+
+`$ npm run tsc`
+
+And then run production code: 
 
 `$ npm run prod`
 
-## Starting
+To start the app in development mode:
 
-To start the server run:
-
-`$ npm start`
+`$ npm run dev`
 
 ## Moving On From Here...
 
@@ -43,16 +44,69 @@ To test the default get handler use the following curl command (Assuming curl is
 
 ## Data binding
 
-Take a look at the excelParser.ts and FSCheck.ts files if you would like to trigger events based on something other than manually plugging in a USB excel sheet. 
+Inside the app directory, there will be a "Models" directy.  This is where all our data models will be stored and accessed. You must modify the following: NodeMailerSenderAccount, DestinationEmail, and FilePath.
 
-Inside the src directory, there will be a "Models" directy.  This is where all our data models will be stored and accessed. You must add in the email account our code will use to SEND email addresses upon match.
-
+#### NodeMailerSenderAccount
 The email account for Nodemailer (SendingEmail) MUST have "Allow less secure apps" turned on and enabled in google's account settings for this to work. 
 
+App\Model\NodeMailerSenderAccount.ts
 ``` javascript 
-export const PermanentEmail = "destinationAddress@example.com"; // Where matches will be sent too
-export const SendingEmail = 'example@gmail.com'; // Account for NodeMailer to use
-export const SendingEmailPassword = "examplePassword"; // Account for NodeMailer to use
+export const SendingEmail = 'example@gmail.com'; 
+export const SendingEmailPassword = "examplePassword"; 
+```
+
+#### DestinationEmail
+The email account where NodeMailer will send the matching data to.  This is the inbox where the all mailinator data will be persisted. 
+
+App\Model\DestinationEmail.ts
+``` javascript 
+export const DestinationEmail = "destinationAddress@example.com"; 
+```
+
+#### Excel Sheet FilePath
+The file path to the excel sheet where the workbook is parsed. 
+
+App\Model\FilePath.ts
+``` javascript 
+export const FilePath: string = "/Users/user/Downloads/Example.xlsx";
+```
+#### Excel Sheet Logic
+This can be changed depending on what column/rows the excelsheet has within it.  Below I will show a simple version of what it's doing. 
+
+App\Application\Services\ExcelReaderService.ts
+``` javascript
+import * as XLSX from "xlsx";
+
+export class ExcelReaderService {
+
+    private PollingInterval: number = 1000;
+    
+    public async Read(file: string): Promise<void> {
+        try {
+            var WorkBook: any = XLSX.readFile(file);
+            var FirstWorkSheet: object = WorkBook.Sheets[WorkBook.SheetNames[0]];
+            var WorkSheetJson: object = XLSX.utils.sheet_to_json(FirstWorkSheet);
+            
+            this.ParseWorkSheet(WorkSheetJson);
+        } catch (err) {
+
+        }
+    }
+
+    private ParseWorkSheet(jsonData: any) : void {
+        jsonData.forEach((row: any, index: number) => {
+            try {
+                setTimeout(async() => {
+                    if (typeof row['EMAIL LABEL'] == 'undefined') return;
+                    console.log(row['EMAIL LABEL']);
+                }, this.PollingInterval * index);
+            } catch (err) {
+
+            }
+        });
+    }
+
+}
 ```
 
 
