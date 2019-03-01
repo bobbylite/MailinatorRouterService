@@ -5,17 +5,21 @@ import { IFileWatcherService } from "../../Infrastructure/Types/IFileWatcherServ
 import { FilePath } from "../../Model/FilePath";
 import { IExcelReaderService } from "../../Infrastructure/Types/IExcelReaderService";
 import Types from "../../Infrastructure/DependencyInjection/Types";
+import { Builder } from "../../Infrastructure/DependencyInjection/Containers";
+import { IMessageBus } from "../../Infrastructure/Types/IMessageBus";
+import { Notify } from "../Events/EventTypes";
 
 @injectable()
 export class FileWatcherService implements IFileWatcherService {
-
-    public FilePath: string;    
+    public MessageBus: IMessageBus;
+    public static FilePath: string;    
     public FileWatch: any;
     public FileFound: boolean;
     public PollingInterval: number;
 
     public constructor(@inject(Types.IExcelReaderService) public ExcelReaderService: IExcelReaderService) {
-        this.FilePath = FilePath;
+        FileWatcherService.FilePath = FilePath;
+        this.MessageBus = Builder.Get<IMessageBus>(Types.IMessageBus);
         this.FileWatch = filewatcher();
         this.FileFound = false;
         this.PollingInterval = 1000;
@@ -34,7 +38,7 @@ export class FileWatcherService implements IFileWatcherService {
 
     private async IsFIleFound(): Promise<boolean> {
         try {
-            return await fileExists(this.FilePath);
+            return await fileExists(FileWatcherService.FilePath);
         } catch (err) {
 
             return false;
@@ -43,9 +47,10 @@ export class FileWatcherService implements IFileWatcherService {
 
     private InitializeFileWatcher() : void {
         try {
-            this.FileWatch.add(this.FilePath);
-            this.FileWatch.on('change', (file: any, stat: any) => {
-                this.ExcelReaderService.Read(this.FilePath);
+            this.FileWatch.add(FileWatcherService.FilePath);
+            this.FileWatch.on('change', (file: any, stat: any) => {    
+                this.MessageBus.emit(Notify.FileFound);        
+                //this.ExcelReaderService.Read(FileWatcherService.FilePath);
             });
             this.FileWatch.on('error', (err: any) => {
                 
@@ -59,7 +64,8 @@ export class FileWatcherService implements IFileWatcherService {
         try {
             this.FileFound = true;
             this.InitializeFileWatcher();
-            this.ExcelReaderService.Read(this.FilePath);
+            this.MessageBus.emit(Notify.FileFound);
+            //this.ExcelReaderService.Read(FileWatcherService.FilePath);
         } catch(err) {
 
         }

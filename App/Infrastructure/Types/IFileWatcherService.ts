@@ -1,5 +1,7 @@
+import { IMessageBus } from "./IMessageBus";
+
 export interface IFileWatcherService {
-    FilePath: string;
+    MessageBus: IMessageBus;
     FileWatch: any;
     FileFound: boolean;
     Watch(): void;
