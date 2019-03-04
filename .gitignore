@@ -7,5 +7,5 @@ build/
 # Sensitive Data
 /App/Model/DestinationEmail.ts 
 /App/Model/FilePath.ts 
-/App/Model/MailinatorApiKey.ts 
+/App/Model/MailiantorApiKey.ts 
 /App/Model/NodeMailerSenderAccount.ts 
