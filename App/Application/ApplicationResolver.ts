@@ -7,6 +7,7 @@ import { IFileWatcherService } from "../Infrastructure/Types/IFileWatcherService
 import { IMessageBus } from "../Infrastructure/Types/IMessageBus";
 import { Notify } from "./Events/EventTypes";
 import { IFileFoundHandler } from "../Infrastructure/Types/IFileFoundHandler";
+import { IMailinatorHttpsManager } from "../Infrastructure/Types/IMailinatorHttpsManager";
 
 @injectable()
 export class ApplicationResolver implements IApplicationResolver {
@@ -17,11 +18,17 @@ export class ApplicationResolver implements IApplicationResolver {
     public constructor(
         @inject(Types.IFileWatcherService) private FileWatcherService: IFileWatcherService,
         @inject(Types.IMessageBus) private MessageBus: IMessageBus,
-        @inject(Types.IFileFoundHandler) private FileFoundHandler: IFileFoundHandler
+        @inject(Types.IFileFoundHandler) private FileFoundHandler: IFileFoundHandler,
+        @inject(Types.IMailinatorHttpsManager) private MailinatorHttpsManager: IMailinatorHttpsManager
     ) {
         this.app = express();
-        this.InitializeServer();
-        this.OnStart();
+        //this.InitializeServer();
+        //this.OnStart();
+        this.TestHttps();
+    }
+
+    private async TestHttps() : Promise<void> {
+        console.log("\x1b[1m", await this.MailinatorHttpsManager.GetInboxMessages("test"));
     }
 
     private OnStart() {

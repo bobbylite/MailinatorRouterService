@@ -4,7 +4,8 @@ let Types : any = {
     IFileWatcherService: Symbol("IFileWatcherService"),
     IExcelReaderService: Symbol("IExcelReaderService"),
     IMessageBus: Symbol("IMessageBus"),
-    IFileFoundHandler: Symbol("IFileFoundHandler")
+    IFileFoundHandler: Symbol("IFileFoundHandler"),
+    IMailinatorHttpsManager: Symbol("IMailinatorHttpsManager")
 }
 
 export default Types;
