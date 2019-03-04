@@ -1,1 +1,0 @@
-export const DestinationEmail : string = "destinationAddress@example.com";

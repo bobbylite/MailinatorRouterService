@@ -1,1 +1,0 @@
-export const FilePath: string = "/Users/robertluisi/Downloads/Example.xlsx";
