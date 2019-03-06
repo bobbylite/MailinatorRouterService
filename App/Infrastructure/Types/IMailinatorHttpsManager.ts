@@ -1,6 +1,6 @@
 import { IHttpManager } from "./IHttpManager";
 
-export interface IMailinatorHttpsManager {
+export interface IMailinatorHttpsManagerService {
     HttpsManager: IHttpManager;
     GetInboxMessagesJson(inboxName: string, filter?: string): Promise<object>;
 }

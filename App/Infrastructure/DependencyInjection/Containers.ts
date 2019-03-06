@@ -11,8 +11,8 @@ import { MessageBus } from "../EventInfrastructure/MessageBus";
 import { IMessageBus } from "../Types/IMessageBus";
 import { IFileFoundHandler } from "../Types/IFileFoundHandler";
 import { FileFoundHandler } from "../../Application/EventHandlers/FileFoundHandler";
-import { IMailinatorHttpsManager } from "../Types/IMailinatorHttpsManager";
-import { MailinatorHttpsManager } from "../../Application/Services/MailinatorHttpsManager";
+import { IMailinatorHttpsManagerService } from "../Types/IMailinatorHttpsManager";
+import { MailinatorHttpsManagerService } from "../../Application/Services/MailinatorHttpsManager";
 
 export class Builder {
 
@@ -38,13 +38,13 @@ export class Builder {
             Builder.Get<IFileWatcherService>(Types.IFileWatcherService),
             Builder.Get<IMessageBus>(Types.IMessageBus),
             Builder.Get<IFileFoundHandler>(Types.IFileFoundHandler),
-            Builder.Get<IMailinatorHttpsManager>(Types.IMailinatorHttpsManager)
+            Builder.Get<IMailinatorHttpsManagerService>(Types.IMailinatorHttpsManagerService)
             ));
     }
 
     private InitializeServiceBindings(builder: Container) : void {
         builder.bind<IMessageBus>(Types.IMessageBus).toConstantValue(new MessageBus);
-        builder.bind<IMailinatorHttpsManager>(Types.IMailinatorHttpsManager).to(MailinatorHttpsManager);
+        builder.bind<IMailinatorHttpsManagerService>(Types.IMailinatorHttpsManagerService).to(MailinatorHttpsManagerService);
         builder.bind<IExcelReaderService>(Types.IExcelReaderService).to(ExcelReaderService);
         builder.bind<IFileWatcherService>(Types.IFileWatcherService).to(FileWatcherService);
     }

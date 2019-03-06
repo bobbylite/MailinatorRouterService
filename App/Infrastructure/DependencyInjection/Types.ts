@@ -5,7 +5,7 @@ let Types : any = {
     IExcelReaderService: Symbol("IExcelReaderService"),
     IMessageBus: Symbol("IMessageBus"),
     IFileFoundHandler: Symbol("IFileFoundHandler"),
-    IMailinatorHttpsManager: Symbol("IMailinatorHttpsManager")
+    IMailinatorHttpsManagerService: Symbol("IMailinatorHttpsManagerService")
 }
 
 export default Types;

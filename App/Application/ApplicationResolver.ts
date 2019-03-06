@@ -7,7 +7,7 @@ import { IFileWatcherService } from "../Infrastructure/Types/IFileWatcherService
 import { IMessageBus } from "../Infrastructure/Types/IMessageBus";
 import { Notify } from "./Events/EventTypes";
 import { IFileFoundHandler } from "../Infrastructure/Types/IFileFoundHandler";
-import { IMailinatorHttpsManager, IInboxMessageJson } from "../Infrastructure/Types/IMailinatorHttpsManager";
+import { IMailinatorHttpsManagerService, IInboxMessageJson } from "../Infrastructure/Types/IMailinatorHttpsManager";
 
 @injectable()
 export class ApplicationResolver implements IApplicationResolver {
@@ -19,7 +19,7 @@ export class ApplicationResolver implements IApplicationResolver {
         @inject(Types.IFileWatcherService) private FileWatcherService: IFileWatcherService,
         @inject(Types.IMessageBus) private MessageBus: IMessageBus,
         @inject(Types.IFileFoundHandler) private FileFoundHandler: IFileFoundHandler,
-        @inject(Types.IMailinatorHttpsManager) private MailinatorHttpsManager: IMailinatorHttpsManager
+        @inject(Types.IMailinatorHttpsManagerService) private MailinatorHttpsManagerService: IMailinatorHttpsManagerService
     ) {
         this.app = express();
         //this.InitializeServer();
@@ -29,7 +29,7 @@ export class ApplicationResolver implements IApplicationResolver {
 
     private async TestHttps() : Promise<void> {
         var testInboxJson: any;
-        testInboxJson = await this.MailinatorHttpsManager.GetInboxMessagesJson("ConsiliTechTest", "Test 2");
+        testInboxJson = await this.MailinatorHttpsManagerService.GetInboxMessagesJson("ConsiliTechTest", "Test 2");
         console.log("\x1b[1m", testInboxJson);
     }
 

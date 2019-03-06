@@ -1,4 +1,4 @@
-import { IMailinatorHttpsManager, IInboxResponse, IInboxMessageJson } from "../../Infrastructure/Types/IMailinatorHttpsManager";
+import { IMailinatorHttpsManagerService, IInboxResponse, IInboxMessageJson } from "../../Infrastructure/Types/IMailinatorHttpsManager";
 import { IHttpManager } from "../../Infrastructure/Types/IHttpManager";
 import { HttpManager } from "../../Infrastructure/NetworkInfrestrucutre/HttpManager";
 import { injectable } from "inversify";
@@ -7,7 +7,7 @@ import { ApiKey } from "../../Model/MailiantorApiKey";
 import { isNullOrUndefined } from "util";
 
 @injectable()
-export class MailinatorHttpsManager implements IMailinatorHttpsManager {
+export class MailinatorHttpsManagerService implements IMailinatorHttpsManagerService {
     HttpsManager: IHttpManager;
     private root: string = "/api/inbox?to=";
     private token: string = "&token="+ ApiKey;
