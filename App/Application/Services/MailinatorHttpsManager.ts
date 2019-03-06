@@ -1,47 +1,58 @@
-import { IMailinatorHttpsManagerService, IInboxResponse, IInboxMessageJson } from "../../Infrastructure/Types/IMailinatorHttpsManager";
+import { IMailinatorHttpsManagerService } from "../../Infrastructure/Types/IMailinatorHttpsManager";
 import { IHttpManager } from "../../Infrastructure/Types/IHttpManager";
 import { HttpManager } from "../../Infrastructure/NetworkInfrestrucutre/HttpManager";
 import { injectable } from "inversify";
 import { LogColors } from "../Utils/LogColors";
 import { ApiKey } from "../../Model/MailiantorApiKey";
 import { isNullOrUndefined } from "util";
+import { IGetInboxMessagesJson } from "../../Infrastructure/Types/IGetInboxMessagesJson";
+import { IInboxMessage } from "../../Infrastructure/Types/IInboxMessage";
 
 @injectable()
 export class MailinatorHttpsManagerService implements IMailinatorHttpsManagerService {
     HttpsManager: IHttpManager;
-    private root: string = "/api/inbox?to=";
+    private ReadInboxroot: string = '/api/inbox?to=';
+    private readMessageRoot: string = 'https://api.mailinator.com/api/email?id=';
     private token: string = "&token="+ ApiKey;
     
     public constructor() {
         this.HttpsManager = new HttpManager();
     }
 
-    public async GetInboxMessagesJson(inboxName: string, filter?: string) : Promise<IInboxMessageJson> {
-        let mailinatorPath: string = this.root.concat(inboxName).concat(this.token);
+    public async GetInboxMessagesJson(inboxName: string, filter?: string) : Promise<IGetInboxMessagesJson> {
+        let mailinatorPath: string = this.ReadInboxroot.concat(inboxName).concat(this.token);
         return await this.RequestInboxMessages('api.mailinator.com', 443, mailinatorPath, 'GET', filter);
     }
 
-    public async ReadMessage(messageId: string): Promise<void> {
+    public async ReadMessage(messageId: string, returnHTML: boolean): Promise<object> {
+        let mailinatorPath: string = this.readMessageRoot.concat(messageId).concat(this.token);
 
+        return await this.RequestReadMessage('api.mailinator.com', 443, mailinatorPath, 'GET', returnHTML);
     }
 
-    private async RequestInboxMessages(domain: string, port: number, path: string, method: string, filter?: string) : Promise<IInboxMessageJson> {
+    private async RequestReadMessage(domain: string, port: number, path: string, method: string, returnHTML: boolean) : Promise<object> {
         try {
-            this.HttpsManager.SetOptions(domain, port, path, method);
-            let httpBufferPromise : Promise<Buffer> = this.HttpsManager.Get();
+            var jsonData: any = await this.Request(domain, port, path, method);
+            var messageBody: any = (returnHTML) ? jsonData.data.parts[1].body : jsonData.data.parts[0].body
 
-            let buffer: Buffer = await httpBufferPromise;
+            return messageBody;
+        } catch (err) {
+            console.log(err);
+            return {msg: err};
+        }
+    }
 
-            let bufferString: string = buffer.toString('ascii');
-            let jsonData: any = JSON.parse(bufferString);
-            let messages: IInboxResponse[] = jsonData.messages;
+    private async RequestInboxMessages(domain: string, port: number, path: string, method: string, filter?: string) : Promise<IGetInboxMessagesJson> {
+        try {
+            let jsonData: any = await this.Request(domain, port, path, method);
+            let messages: IInboxMessage[] = jsonData.messages;
 
-            var filteredResult: IInboxResponse[] = messages;
+            var filteredResult: IInboxMessage[] = messages;
 
             if (filter) {
                 var filterString: string = (filter) ? filter : "";
                 filteredResult = [];
-                messages.forEach((msg: IInboxResponse) => {
+                messages.forEach((msg: IInboxMessage) => {
                     if (msg["subject"].toString() === filterString) {
                         filteredResult.push(msg);
                     }
@@ -52,6 +63,22 @@ export class MailinatorHttpsManagerService implements IMailinatorHttpsManagerSer
         } catch (err) {
             console.log(err);
             return {filterResult: false, messages: err}
+        }
+    }
+    
+    private async Request(domain: string, port: number, path: string, method: string) : Promise<object> {
+        try {
+            this.HttpsManager.SetOptions(domain, port, path, method);
+            let httpBufferPromise : Promise<Buffer> = this.HttpsManager.Get();
+    
+            let buffer: Buffer = await httpBufferPromise;
+            let bufferString: string = buffer.toString('ascii');
+            let jsonData: any = JSON.parse(bufferString);
+    
+            return jsonData;
+        } catch (err) {
+            console.log(err);
+            return {msg: err}
         }
     }
 }

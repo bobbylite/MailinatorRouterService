@@ -7,7 +7,9 @@ import { IFileWatcherService } from "../Infrastructure/Types/IFileWatcherService
 import { IMessageBus } from "../Infrastructure/Types/IMessageBus";
 import { Notify } from "./Events/EventTypes";
 import { IFileFoundHandler } from "../Infrastructure/Types/IFileFoundHandler";
-import { IMailinatorHttpsManagerService, IInboxMessageJson } from "../Infrastructure/Types/IMailinatorHttpsManager";
+import { IMailinatorHttpsManagerService } from "../Infrastructure/Types/IMailinatorHttpsManager";
+import { IGetInboxMessagesJson } from "../Infrastructure/Types/IGetInboxMessagesJson";
+import { IInboxMessage } from "../Infrastructure/Types/IInboxMessage";
 
 @injectable()
 export class ApplicationResolver implements IApplicationResolver {
@@ -28,9 +30,18 @@ export class ApplicationResolver implements IApplicationResolver {
     }
 
     private async TestHttps() : Promise<void> {
-        var testInboxJson: any;
-        testInboxJson = await this.MailinatorHttpsManagerService.GetInboxMessagesJson("ConsiliTechTest", "Test 2");
-        console.log("\x1b[1m", testInboxJson);
+        var asyncJson: any;
+        var inboxMessageJson: IGetInboxMessagesJson
+        asyncJson = await this.MailinatorHttpsManagerService.GetInboxMessagesJson("ConsiliTechTest", "Test 2");
+        inboxMessageJson = asyncJson;
+
+        if (inboxMessageJson.filterResult) {
+            inboxMessageJson.messages.forEach(async (msg: IInboxMessage) => {
+                var readMessage: any= await this.MailinatorHttpsManagerService.ReadMessage(msg.id, true);
+                console.log("\x1b[1m", readMessage);
+            });
+        }
+        //console.log("\x1b[1m", inboxMessageJson);
     }
 
     private OnStart() {

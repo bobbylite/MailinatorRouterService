@@ -1,4 +1,6 @@
+import { IInboxMessage } from "./IInboxMessage";
+
 export interface IGetInboxMessagesJson {
     filterResult: boolean;
-    messages: any
+    messages: IInboxMessage[]
 }

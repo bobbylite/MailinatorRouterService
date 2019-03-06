@@ -1,22 +1,8 @@
 import { IHttpManager } from "./IHttpManager";
+import { IGetInboxMessagesJson } from "./IGetInboxMessagesJson";
 
 export interface IMailinatorHttpsManagerService {
     HttpsManager: IHttpManager;
-    GetInboxMessagesJson(inboxName: string, filter?: string): Promise<object>;
-}
-
-export interface IInboxResponse {
-    fromfull: string;
-    subject: string;
-    from: string;
-    origfrom: string;
-    to: string;
-    id: string;
-    time: number;
-    seconds_ago: number;
-}
-
-export interface IInboxMessageJson {
-    filterResult: boolean;
-    messages: IInboxResponse[]
+    ReadMessage(messageId: string, returnHTML: boolean): Promise<object>
+    GetInboxMessagesJson(inboxName: string, filter?: string): Promise<IGetInboxMessagesJson>;
 }
