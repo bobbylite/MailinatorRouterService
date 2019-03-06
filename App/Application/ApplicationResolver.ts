@@ -41,7 +41,6 @@ export class ApplicationResolver implements IApplicationResolver {
                 console.log("\x1b[1m", readMessage);
             });
         }
-        //console.log("\x1b[1m", inboxMessageJson);
     }
 
     private OnStart() {
