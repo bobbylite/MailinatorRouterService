@@ -10,6 +10,7 @@ import { IFileFoundHandler } from "../Infrastructure/Types/IFileFoundHandler";
 import { IMailinatorHttpsManagerService } from "../Infrastructure/Types/IMailinatorHttpsManager";
 import { IGetInboxMessagesJson } from "../Infrastructure/Types/IGetInboxMessagesJson";
 import { IInboxMessage } from "../Infrastructure/Types/IInboxMessage";
+import { IInboxQueueHandler } from "../Infrastructure/Types/IInboxQueueHandler";
 
 @injectable()
 export class ApplicationResolver implements IApplicationResolver {
@@ -21,11 +22,12 @@ export class ApplicationResolver implements IApplicationResolver {
         @inject(Types.IFileWatcherService) private FileWatcherService: IFileWatcherService,
         @inject(Types.IMessageBus) private MessageBus: IMessageBus,
         @inject(Types.IFileFoundHandler) private FileFoundHandler: IFileFoundHandler,
-        @inject(Types.IMailinatorHttpsManagerService) private MailinatorHttpsManagerService: IMailinatorHttpsManagerService
+        @inject(Types.IMailinatorHttpsManagerService) private MailinatorHttpsManagerService: IMailinatorHttpsManagerService,
+        @inject(Types.IInboxQueueHandler) private InboxQueueHandler: IInboxQueueHandler
     ) {
         this.app = express();
-        //this.InitializeServer();
-        //this.OnStart();
+        this.InitializeServer();
+        this.OnStart();
         this.TestHttps();
     }
 
@@ -50,7 +52,7 @@ export class ApplicationResolver implements IApplicationResolver {
 
     private RegisiterApplicationEventsToHandler() {
         this.MessageBus.on(Notify.FileFound, async () => {this.FileFoundHandler.InitializeHandler()});
-        
+        this.MessageBus.on(Notify.InboxQueue, async() => {this.InboxQueueHandler.InitializeHandler()});
     }
 
     private InitializeServer() : void {

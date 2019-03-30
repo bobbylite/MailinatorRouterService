@@ -3,6 +3,7 @@ import { IGetInboxMessagesJson } from "./IGetInboxMessagesJson";
 
 export interface IMailinatorHttpsManagerService {
     HttpsManager: IHttpManager;
-    ReadMessage(messageId: string, returnHTML: boolean): Promise<object>
+    FindMatchingInboxSubject(subject: string, inbox: string): Promise<string>;
+    ReadMessage(messageId: string, returnHTML: boolean): Promise<object>;
     GetInboxMessagesJson(inboxName: string, filter?: string): Promise<IGetInboxMessagesJson>;
 }

@@ -1,14 +1,20 @@
 import { IExcelReaderService } from "../../Infrastructure/Types/IExcelReaderService";
-import { injectable } from "inversify";
+import { injectable, inject } from "inversify";
 import * as XLSX from "xlsx";
 import { sleep } from "../Utils/Sleep";
+import Types from "../../Infrastructure/DependencyInjection/Types";
+import { IMessageBus } from "../../Infrastructure/Types/IMessageBus";
+import { Builder } from "../../Infrastructure/DependencyInjection/Containers";
+import { Notify } from "../Events/EventTypes";
 
 @injectable()
 export class ExcelReaderService implements IExcelReaderService {
 
     private PollingInterval: number = 1000;
+    private MessageBus: IMessageBus = Builder.Get<IMessageBus>(Types.IMessageBus);
+    public static dataArray: string[];
     
-    public Read(file: string): void {
+    public async Read(file: string) : Promise<void> {
         try {
             var WorkBook: any = XLSX.readFile(file);
             var FirstWorkSheet: object = WorkBook.Sheets[WorkBook.SheetNames[0]];
@@ -21,35 +27,25 @@ export class ExcelReaderService implements IExcelReaderService {
     }
 
     private async ParseWorkSheet(jsonData: any) : Promise<void> {
-        var dataArray: string[];
+        ExcelReaderService.dataArray = [];
 
-        
         jsonData.forEach(async(row: any, index: number) => {
             try {
+                if (index === jsonData.length-1) {
+                    console.log("Complete!");
+                    this.OnComplete(ExcelReaderService.dataArray);
+                }
+                
                 if (typeof row['EMAIL LABEL'] == 'undefined') return;
-                await sleep(this.PollingInterval *index);
-                console.log(row['EMAIL LABEL']);
-                dataArray.push(row['EMAIL LABEL'])
+                ExcelReaderService.dataArray.push(row['EMAIL LABEL']);
             } catch (err) {
 
             }
         });
-        
-    /** 
-        await ExcelReaderService.AsyncForEach(jsonData, async(row: any, index: number) => {
-            try {
-                if (typeof row['EMAIL LABEL'] == 'undefined') return;
-                await sleep(10*index);
-                console.log(row['EMAIL LABEL']);
-                dataArray.push(row['EMAIL LABEL'])
-            } catch (err) {
+    }
 
-            }
-        });
-
-        console.log("done");
-        return dataArray;
-    */
+    private OnComplete(data: string[]) : void {
+        this.MessageBus.emit(Notify.InboxQueue);
     }
 
     private static async AsyncForEach(array:any, callback:any) {

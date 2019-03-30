@@ -1,0 +1,1 @@
+export const SubjectIdentifier: string = "Your Recent Purchase Experience";

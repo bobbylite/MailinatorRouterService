@@ -1,3 +1,3 @@
 export interface IExcelReaderService {
-    Read(file: string) : void;
+    Read(file: string) : Promise<void>;
 }

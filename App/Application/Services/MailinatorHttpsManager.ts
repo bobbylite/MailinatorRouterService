@@ -14,9 +14,19 @@ export class MailinatorHttpsManagerService implements IMailinatorHttpsManagerSer
     private ReadInboxroot: string = '/api/inbox?to=';
     private readMessageRoot: string = 'https://api.mailinator.com/api/email?id=';
     private token: string = "&token="+ ApiKey;
-    
+    private failedToFindMatch: string = "No match found.";
+
     public constructor() {
         this.HttpsManager = new HttpManager();
+    }
+
+    public async FindMatchingInboxSubject(subject: string, inbox: string) : Promise<string>{
+        var asyncJson: any;
+        var inboxMessageJson: IGetInboxMessagesJson
+        asyncJson = await this.GetInboxMessagesJson(inbox, subject);
+        inboxMessageJson = asyncJson;
+
+        return (inboxMessageJson.filterResult) ? await this.getMatchedHtml(inboxMessageJson): this.failedToFindMatch;
     }
 
     public async GetInboxMessagesJson(inboxName: string, filter?: string) : Promise<IGetInboxMessagesJson> {
@@ -80,5 +90,16 @@ export class MailinatorHttpsManagerService implements IMailinatorHttpsManagerSer
             console.log(err);
             return {msg: err}
         }
+    }
+
+    private async getMatchedHtml(inboxMessages: IGetInboxMessagesJson) : Promise<any> {
+
+        return new Promise( (resolve, reject) => {
+            inboxMessages.messages.forEach(async (msg: IInboxMessage) => {
+                var readMessage: any= await this.ReadMessage(msg.id, true);
+                //console.log("\x1b[1m", readMessage);
+                resolve(readMessage);
+            });
+        });
     }
 }
