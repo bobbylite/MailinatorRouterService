@@ -5,16 +5,24 @@ import Types from "../../Infrastructure/DependencyInjection/Types";
 import { IMailinatorHttpsManagerService } from "../../Infrastructure/Types/IMailinatorHttpsManager";
 import { MailinatorHttpsManagerService } from "./MailinatorHttpsManager";
 import { SubjectIdentifier } from "../../Model/SubjectIdentifier";
+import { IMessageBus } from "../../Infrastructure/Types/IMessageBus";
+import { Builder } from "../../Infrastructure/DependencyInjection/Containers";
+import { Notify } from "../Events/EventTypes";
+import { NoMatchFound } from "../../Model/NoMatchFound";
 
 @injectable()
 export class InboxQueueService implements IInboxQueueService{
 
+    public static NodeMailerHtmlContent: string;
     private PollingInterval: number = 1000;
     private data: string[] = [];
+    private MessageBus: IMessageBus;
 
     public constructor(
         @inject(Types.IMailinatorHttpsManagerService) private MailinatorHttpsManagerService: IMailinatorHttpsManagerService
-    ) {}
+    ) {
+        this.MessageBus = Builder.Get<IMessageBus>(Types.IMessageBus);
+    }
 
     public StartPolling() : void {
 
@@ -30,7 +38,10 @@ export class InboxQueueService implements IInboxQueueService{
                 console.log("Index: " + index);
 
                 var htmlContent: string = await this.MailinatorHttpsManagerService.FindMatchingInboxSubject(SubjectIdentifier, inboxName);
-                this.handleFoundMatch(htmlContent);
+                if (htmlContent !== NoMatchFound){
+                    this.handleFoundMatch(htmlContent);
+                    this.PopData(inboxName);
+                } 
 
                 if (index === this.data.length-1) this.restartPoll();
             } catch (err) {
@@ -42,12 +53,18 @@ export class InboxQueueService implements IInboxQueueService{
     private handleFoundMatch(htmlcontent: string): void {
         // Send off to destination address.
         // POP inbox from queue that matched.
-
-        console.log("Found Match: " + htmlcontent);
+        InboxQueueService.NodeMailerHtmlContent = htmlcontent;
+        this.MessageBus.emit(Notify.FoundMatch);
     }
 
     private restartPoll(): void {
         console.log("Ended!");
         this.Poll(this.data);
+    }
+
+    private PopData(match: string): string[] {
+        var index = this.data.indexOf(match);
+        if (index !== -1) return this.data.splice(index, 1);
+        else return this.data;
     }
 }

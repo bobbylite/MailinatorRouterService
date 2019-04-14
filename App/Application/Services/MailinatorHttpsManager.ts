@@ -7,6 +7,7 @@ import { ApiKey } from "../../Model/MailiantorApiKey";
 import { isNullOrUndefined } from "util";
 import { IGetInboxMessagesJson } from "../../Infrastructure/Types/IGetInboxMessagesJson";
 import { IInboxMessage } from "../../Infrastructure/Types/IInboxMessage";
+import { NoMatchFound } from "../../Model/NoMatchFound";
 
 @injectable()
 export class MailinatorHttpsManagerService implements IMailinatorHttpsManagerService {
@@ -14,7 +15,6 @@ export class MailinatorHttpsManagerService implements IMailinatorHttpsManagerSer
     private ReadInboxroot: string = '/api/inbox?to=';
     private readMessageRoot: string = 'https://api.mailinator.com/api/email?id=';
     private token: string = "&token="+ ApiKey;
-    private failedToFindMatch: string = "No match found.";
 
     public constructor() {
         this.HttpsManager = new HttpManager();
@@ -26,7 +26,7 @@ export class MailinatorHttpsManagerService implements IMailinatorHttpsManagerSer
         asyncJson = await this.GetInboxMessagesJson(inbox, subject);
         inboxMessageJson = asyncJson;
 
-        return (inboxMessageJson.filterResult) ? await this.getMatchedHtml(inboxMessageJson): this.failedToFindMatch;
+        return (inboxMessageJson.filterResult) ? await this.getMatchedHtml(inboxMessageJson): NoMatchFound;
     }
 
     public async GetInboxMessagesJson(inboxName: string, filter?: string) : Promise<IGetInboxMessagesJson> {

@@ -17,6 +17,10 @@ import { IInboxQueueHandler } from "../Types/IInboxQueueHandler";
 import { InboxQueueHandler } from "../../Application/EventHandlers/InboxQueueHandler";
 import { IInboxQueueService } from "../Types/IInboxQueueService";
 import { InboxQueueService } from "../../Application/Services/InboxQueueService";
+import { INodeMailerService } from "../Types/INodeMailerService";
+import { NodeMailerService } from "../../Application/Services/NodeMailerService";
+import { INodeMailerHandler } from "../Types/INodeMailerHandler";
+import { NodeMailerHandler } from "../../Application/EventHandlers/NodeMailerHandler";
 
 export class Builder {
 
@@ -43,7 +47,8 @@ export class Builder {
             Builder.Get<IMessageBus>(Types.IMessageBus),
             Builder.Get<IFileFoundHandler>(Types.IFileFoundHandler),
             Builder.Get<IMailinatorHttpsManagerService>(Types.IMailinatorHttpsManagerService),
-            Builder.Get<IInboxQueueHandler>(Types.IInboxQueueHandler)
+            Builder.Get<IInboxQueueHandler>(Types.IInboxQueueHandler),
+            Builder.Get<INodeMailerHandler>(Types.INodeMailerHandler)
             ));
     }
 
@@ -53,11 +58,13 @@ export class Builder {
         builder.bind<IExcelReaderService>(Types.IExcelReaderService).to(ExcelReaderService);
         builder.bind<IFileWatcherService>(Types.IFileWatcherService).to(FileWatcherService);
         builder.bind<IInboxQueueService>(Types.IInboxQueueService).to(InboxQueueService);
+        builder.bind<INodeMailerService>(Types.INodeMailerService).to(NodeMailerService);
     }
 
     private InitializeEventBindings(builder: Container) : void {
         builder.bind<IFileFoundHandler>(Types.IFileFoundHandler).to(FileFoundHandler);
         builder.bind<IInboxQueueHandler>(Types.IInboxQueueHandler).to(InboxQueueHandler);
+        builder.bind<INodeMailerHandler>(Types.INodeMailerHandler).to(NodeMailerHandler);
     }
 }
 

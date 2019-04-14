@@ -1,0 +1,1 @@
+export const NoMatchFound: any = Symbol("NoMatchFound");

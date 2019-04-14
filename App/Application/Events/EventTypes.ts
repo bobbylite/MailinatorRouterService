@@ -1,5 +1,6 @@
 export const Notify = {
     FileFound: "FileFound",
     ParsedExcelShet: "ParsedExcelSheet",
-    InboxQueue: "InboxQueue"
+    InboxQueue: "InboxQueue",
+    FoundMatch: "FoundMatch"
 }
