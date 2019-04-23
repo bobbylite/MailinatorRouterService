@@ -46,6 +46,7 @@ export class HttpManager implements IHttpManager {
 
                 res.on('error', (err) => {
                     console.log(err);
+                    reject();
                 })
 
                 res.on('data', (chunk) => {
@@ -60,6 +61,7 @@ export class HttpManager implements IHttpManager {
 
             request.on('error', (err) => {
                 console.log(err);
+                reject();
             });   
     
             request.end();
