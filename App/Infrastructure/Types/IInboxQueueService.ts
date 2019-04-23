@@ -1,3 +1,4 @@
 export interface IInboxQueueService {
-    Poll(data: string[]) : void;
+    StartPolling(): void;
+    StopPolling(): void;
 }

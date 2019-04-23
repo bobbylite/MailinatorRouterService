@@ -6,12 +6,14 @@ import Types from "../../Infrastructure/DependencyInjection/Types";
 import { IMessageBus } from "../../Infrastructure/Types/IMessageBus";
 import { Builder } from "../../Infrastructure/DependencyInjection/Containers";
 import { Notify } from "../Events/EventTypes";
+import { IEmailListService } from "../../Infrastructure/Types/IEmailListService";
 
 @injectable()
 export class ExcelReaderService implements IExcelReaderService {
 
     private PollingInterval: number = 1000;
     private MessageBus: IMessageBus = Builder.Get<IMessageBus>(Types.IMessageBus);
+    private emailList: IEmailListService = Builder.Get<IEmailListService>(Types.IEmailListService);
     public static dataArray: string[];
     
     public async Read(file: string) : Promise<void> {
@@ -37,7 +39,8 @@ export class ExcelReaderService implements IExcelReaderService {
                 }
                 
                 if (typeof row['EMAIL LABEL'] == 'undefined') return;
-                ExcelReaderService.dataArray.push(row['EMAIL LABEL']);
+                if (row['STATUS'] !== "NOT YET RECEIVED") return;
+                if (!this.emailList.AlreadyEntered(row['EMAIL LABEL'])) this.emailList.Add(row['EMAIL LABEL']);
             } catch (err) {
 
             }

@@ -9,7 +9,8 @@ let Types : any = {
     IInboxQueueHandler: Symbol("IInboxQueueHandler"),
     IInboxQueueService: Symbol("IInboxQueueService"),
     INodeMailerService: Symbol("INodeMailerService"),
-    INodeMailerHandler: Symbol("INodeMailerHandler")
+    INodeMailerHandler: Symbol("INodeMailerHandler"),
+    IEmailListService: Symbol("IEmailListService")
 }
 
 export default Types;

@@ -95,6 +95,7 @@ export class MailinatorHttpsManagerService implements IMailinatorHttpsManagerSer
     private async getMatchedHtml(inboxMessages: IGetInboxMessagesJson) : Promise<any> {
 
         return new Promise( (resolve, reject) => {
+            if (typeof(inboxMessages.messages) === "undefined") reject();
             inboxMessages.messages.forEach(async (msg: IInboxMessage) => {
                 var readMessage: any= await this.ReadMessage(msg.id, true);
                 //console.log("\x1b[1m", readMessage);

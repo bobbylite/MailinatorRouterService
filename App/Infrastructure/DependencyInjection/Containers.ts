@@ -21,6 +21,8 @@ import { INodeMailerService } from "../Types/INodeMailerService";
 import { NodeMailerService } from "../../Application/Services/NodeMailerService";
 import { INodeMailerHandler } from "../Types/INodeMailerHandler";
 import { NodeMailerHandler } from "../../Application/EventHandlers/NodeMailerHandler";
+import { IEmailListService } from "../Types/IEmailListService";
+import { EmailListService } from "../../Application/Services/EmailListService";
 
 export class Builder {
 
@@ -54,10 +56,14 @@ export class Builder {
 
     private InitializeServiceBindings(builder: Container) : void {
         builder.bind<IMessageBus>(Types.IMessageBus).toConstantValue(new MessageBus);
+        builder.bind<IEmailListService>(Types.IEmailListService).toConstantValue(new EmailListService);
         builder.bind<IMailinatorHttpsManagerService>(Types.IMailinatorHttpsManagerService).to(MailinatorHttpsManagerService);
         builder.bind<IExcelReaderService>(Types.IExcelReaderService).to(ExcelReaderService);
         builder.bind<IFileWatcherService>(Types.IFileWatcherService).to(FileWatcherService);
         builder.bind<IInboxQueueService>(Types.IInboxQueueService).to(InboxQueueService);
+        //builder.bind<IInboxQueueService>(Types.IInboxQueueService)
+            //.toConstantValue(new InboxQueueService(Builder.Get<IMailinatorHttpsManagerService>(Types.IMailinatorHttpsManagerService)));
+
         builder.bind<INodeMailerService>(Types.INodeMailerService).to(NodeMailerService);
     }
 

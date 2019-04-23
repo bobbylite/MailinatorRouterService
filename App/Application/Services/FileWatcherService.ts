@@ -8,6 +8,7 @@ import Types from "../../Infrastructure/DependencyInjection/Types";
 import { Builder } from "../../Infrastructure/DependencyInjection/Containers";
 import { IMessageBus } from "../../Infrastructure/Types/IMessageBus";
 import { Notify } from "../Events/EventTypes";
+import { InboxQueueService } from "./InboxQueueService";
 
 @injectable()
 export class FileWatcherService implements IFileWatcherService {
@@ -48,9 +49,8 @@ export class FileWatcherService implements IFileWatcherService {
     private InitializeFileWatcher() : void {
         try {
             this.FileWatch.add(FileWatcherService.FilePath);
-            this.FileWatch.on('change', (file: any, stat: any) => {    
-                this.MessageBus.emit(Notify.FileFound);        
-                //this.ExcelReaderService.Read(FileWatcherService.FilePath);
+            this.FileWatch.on('change', (file: any, stat: any) => { 
+                this.MessageBus.emit(Notify.FileFound);
             });
             this.FileWatch.on('error', (err: any) => {
                 
@@ -65,7 +65,6 @@ export class FileWatcherService implements IFileWatcherService {
             this.FileFound = true;
             this.InitializeFileWatcher();
             this.MessageBus.emit(Notify.FileFound);
-            //this.ExcelReaderService.Read(FileWatcherService.FilePath);
         } catch(err) {
 
         }

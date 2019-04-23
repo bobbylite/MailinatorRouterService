@@ -1,39 +1,50 @@
 import { IInboxQueueService } from "../../Infrastructure/Types/IInboxQueueService";
 import { injectable, inject } from "inversify";
-import { sleep } from "../Utils/Sleep";
+import { sleep, sleepSync } from "../Utils/Sleep";
 import Types from "../../Infrastructure/DependencyInjection/Types";
 import { IMailinatorHttpsManagerService } from "../../Infrastructure/Types/IMailinatorHttpsManager";
-import { MailinatorHttpsManagerService } from "./MailinatorHttpsManager";
 import { SubjectIdentifier } from "../../Model/SubjectIdentifier";
 import { IMessageBus } from "../../Infrastructure/Types/IMessageBus";
 import { Builder } from "../../Infrastructure/DependencyInjection/Containers";
 import { Notify } from "../Events/EventTypes";
 import { NoMatchFound } from "../../Model/NoMatchFound";
+import { IEmailListService } from "../../Infrastructure/Types/IEmailListService";
+import { EmailListService } from "./EmailListService";
 
 @injectable()
 export class InboxQueueService implements IInboxQueueService{
 
     public static NodeMailerHtmlContent: string;
     private PollingInterval: number = 1000;
-    private data: string[] = [];
     private MessageBus: IMessageBus;
+    private EmailListService: IEmailListService;
+    public static IsRunning: boolean;
+    
 
     public constructor(
         @inject(Types.IMailinatorHttpsManagerService) private MailinatorHttpsManagerService: IMailinatorHttpsManagerService
     ) {
         this.MessageBus = Builder.Get<IMessageBus>(Types.IMessageBus);
+        this.EmailListService =  Builder.Get<IEmailListService>(Types.IEmailListService);
+        InboxQueueService.IsRunning = false;
     }
 
-    public StartPolling() : void {
-
+    public StartPolling() : void {  
+        InboxQueueService.IsRunning = true;   
+        this.Poll();
     }
 
-    public Poll(data: string[]) : void {
-        if (this.data.length === 0) this.data = data;
+    public StopPolling(): void {
+        InboxQueueService.IsRunning = false;
+    }
 
+    public async Poll() {
+        /*
         this.data.forEach(async (inboxName: any, index: number) => {
             try {
+                if (!InboxQueueService.CanPoll) throw this.BreakException;
                 await sleep(1000 * index);
+                console.log("Can Poll: " + InboxQueueService.CanPoll);
                 console.log(inboxName);
                 console.log("Index: " + index);
 
@@ -48,23 +59,43 @@ export class InboxQueueService implements IInboxQueueService{
                 console.log(err);
             }
         });
+        */ 
+        
+        for(var i = 0; i < EmailListService.EmailList.length; i++) {
+            try {
+                await sleep(1000);
+                var inboxName = EmailListService.EmailList[i];
+                console.log(inboxName);
+                console.log("Index: " + i);
+
+                var htmlContent: string = await this.MailinatorHttpsManagerService.FindMatchingInboxSubject(SubjectIdentifier, inboxName);
+                if (htmlContent !== NoMatchFound){
+                    this.handleFoundMatch(htmlContent);
+                    this.PopEmail(inboxName);
+                } 
+
+                if (i === EmailListService.EmailList.length-1 && InboxQueueService.IsRunning) this.restartPoll();
+            } catch (err) {
+                console.log(err);
+            }           
+        }
     }
 
     private handleFoundMatch(htmlcontent: string): void {
         // Send off to destination address.
         // POP inbox from queue that matched.
+        console.log(InboxQueueService.NodeMailerHtmlContent);
         InboxQueueService.NodeMailerHtmlContent = htmlcontent;
         this.MessageBus.emit(Notify.FoundMatch);
     }
 
     private restartPoll(): void {
         console.log("Ended!");
-        this.Poll(this.data);
+        this.Poll();
     }
 
-    private PopData(match: string): string[] {
-        var index = this.data.indexOf(match);
-        if (index !== -1) return this.data.splice(index, 1);
-        else return this.data;
+    private PopEmail(match: string): string[] {
+        this.EmailListService.Remove(match);
+        return EmailListService.EmailList;
     }
 }
