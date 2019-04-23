@@ -89,6 +89,7 @@ export class InboxQueueService implements IInboxQueueService{
         var html = rawData.data.parts[1].body;
 
         InboxQueueService.NodeMailerContent = {
+            inbox: inbox,
             from: from,
             subject: subject,
             html: html

@@ -21,7 +21,7 @@ export class NodeMailerService implements INodeMailerService {
         let mailOptions = {
             from: content.from,
             to: DestinationEmail,
-            subject: content.subject,
+            subject: content.inbox + " Mailinator Inbox",
             html: content.html
         };
 
