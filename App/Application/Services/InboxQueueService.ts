@@ -84,7 +84,7 @@ export class InboxQueueService implements IInboxQueueService{
     private async handleFoundMatch(inbox: string): Promise<any> {
         var rawData: any = await this.MailinatorHttpsManagerService.GetRawData(inbox);
 
-        var from = '"Mailinator Service" ' + rawData.data.origfrom;
+        var from = '"Mailinator Service" - ' + rawData.data.origfrom;
         var subject = rawData.data.subject;
         var html = rawData.data.parts[1].body;
 
