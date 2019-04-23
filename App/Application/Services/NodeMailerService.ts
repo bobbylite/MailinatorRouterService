@@ -25,7 +25,7 @@ export class NodeMailerService implements INodeMailerService {
             html: content.html
         };
 
-        transporter.sendMail(mailOptions, (err, info) => {
+        transporter.sendMail(mailOptions, (err: any, info: any) => {
             if (err) {
                 return console.log(err);
             }
