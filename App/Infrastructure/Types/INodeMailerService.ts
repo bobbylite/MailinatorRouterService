@@ -1,3 +1,3 @@
 export interface INodeMailerService {
-    Send(content: string): void;
+    Send(content: object): void;
 }

@@ -14,7 +14,7 @@ import { EmailListService } from "./EmailListService";
 @injectable()
 export class InboxQueueService implements IInboxQueueService{
 
-    public static NodeMailerHtmlContent: string;
+    public static NodeMailerContent: any;
     private PollingInterval: number = 1000;
     private MessageBus: IMessageBus;
     private EmailListService: IEmailListService;
@@ -70,7 +70,7 @@ export class InboxQueueService implements IInboxQueueService{
 
                 var htmlContent: string = await this.MailinatorHttpsManagerService.FindMatchingInboxSubject(SubjectIdentifier, inboxName);
                 if (htmlContent !== NoMatchFound){
-                    this.handleFoundMatch(htmlContent);
+                    this.handleFoundMatch(inboxName);
                     this.PopEmail(inboxName);
                 } 
 
@@ -81,11 +81,19 @@ export class InboxQueueService implements IInboxQueueService{
         }
     }
 
-    private handleFoundMatch(htmlcontent: string): void {
-        // Send off to destination address.
-        // POP inbox from queue that matched.
-        console.log(InboxQueueService.NodeMailerHtmlContent);
-        InboxQueueService.NodeMailerHtmlContent = htmlcontent;
+    private async handleFoundMatch(inbox: string): Promise<any> {
+        var rawData: any = await this.MailinatorHttpsManagerService.GetRawData(inbox);
+
+        var from = '"Mailinator Service" ' + rawData.data.origfrom;
+        var subject = rawData.data.subject;
+        var html = rawData.data.parts[1].body;
+
+        InboxQueueService.NodeMailerContent = {
+            from: from,
+            subject: subject,
+            html: html
+        };
+
         this.MessageBus.emit(Notify.FoundMatch);
     }
 

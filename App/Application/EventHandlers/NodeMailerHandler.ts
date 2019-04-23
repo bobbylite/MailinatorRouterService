@@ -17,6 +17,6 @@ export class NodeMailerHandler extends BaseHandler implements INodeMailerHandler
     }
     
     protected Handle(message?: any) {
-        this.MailerService.Send(InboxQueueService.NodeMailerHtmlContent);
+        this.MailerService.Send(InboxQueueService.NodeMailerContent);
     }
 }

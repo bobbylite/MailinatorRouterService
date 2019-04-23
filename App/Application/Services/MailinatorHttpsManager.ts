@@ -40,6 +40,21 @@ export class MailinatorHttpsManagerService implements IMailinatorHttpsManagerSer
         return await this.RequestReadMessage('api.mailinator.com', 443, mailinatorPath, 'GET', returnHTML);
     }
 
+    public async GetRawData(messageId: string) : Promise<object> {
+        let mailinatorPath: string = this.readMessageRoot.concat(messageId).concat(this.token);
+
+        return await this.RequestRawData('api.mailinator.com', 443, mailinatorPath, 'GET');
+    }
+
+    private async RequestRawData(domain: string, port: number, path: string, method: string) : Promise<object> {
+        try {
+            return await this.Request(domain, port, path, method);
+        } catch (err) {
+            console.log(err);
+            return {msg: err};
+        }
+    }
+
     private async RequestReadMessage(domain: string, port: number, path: string, method: string, returnHTML: boolean) : Promise<object> {
         try {
             var jsonData: any = await this.Request(domain, port, path, method);

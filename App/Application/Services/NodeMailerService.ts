@@ -8,8 +8,8 @@ import { SubjectIdentifier } from "../../Model/SubjectIdentifier";
 @injectable()
 export class NodeMailerService implements INodeMailerService {
 
-    public Send(content: string): void {
-        console.log("Sending: " + content);
+    public Send(content: any): void {
+        console.log(content);
         let transporter = nodemailer.createTransport({
             service: "Gmail",
             auth: {
@@ -19,10 +19,10 @@ export class NodeMailerService implements INodeMailerService {
         });
 
         let mailOptions = {
-            from: '"Mailinator Service"',
+            from: content.from,
             to: DestinationEmail,
-            subject: SubjectIdentifier,
-            html: content
+            subject: content.subject,
+            html: content.html
         };
 
         transporter.sendMail(mailOptions, (err, info) => {
