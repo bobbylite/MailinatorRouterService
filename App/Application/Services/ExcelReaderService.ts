@@ -15,11 +15,18 @@ export class ExcelReaderService implements IExcelReaderService {
     private MessageBus: IMessageBus = Builder.Get<IMessageBus>(Types.IMessageBus);
     private emailList: IEmailListService = Builder.Get<IEmailListService>(Types.IEmailListService);
     public static dataArray: string[];
+    public static CurrentlyReading: boolean = false;
     
     public async Read(file: string) : Promise<void> {
         try {
             console.log("Reading worksheet...");
             
+            if (ExcelReaderService.CurrentlyReading) {
+                console.log("Already reading worksheet...");
+                return;
+            }
+
+            ExcelReaderService.CurrentlyReading = true;
             var WorkBook: any = XLSX.readFile(file);
             var FirstWorkSheet: object = WorkBook.Sheets[WorkBook.SheetNames[0]];
             var WorkSheetJson: object = XLSX.utils.sheet_to_json(FirstWorkSheet);
@@ -37,6 +44,7 @@ export class ExcelReaderService implements IExcelReaderService {
             try {
                 if (index === jsonData.length-1) {
                     console.log("Complete!");
+                    ExcelReaderService.CurrentlyReading = false;
                     this.OnComplete(ExcelReaderService.dataArray);
                 }
                 
