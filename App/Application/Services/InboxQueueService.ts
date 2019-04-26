@@ -19,6 +19,7 @@ export class InboxQueueService implements IInboxQueueService{
     private MessageBus: IMessageBus;
     private EmailListService: IEmailListService;
     public static IsRunning: boolean;
+    public static EmailListLength: number;
     
 
     public constructor(
@@ -60,8 +61,8 @@ export class InboxQueueService implements IInboxQueueService{
             }
         });
         */ 
-        
-        for(var i = 0; i < EmailListService.EmailList.length; i++) {
+        InboxQueueService.EmailListLength = EmailListService.EmailList.length
+        for(var i = 0; i < InboxQueueService.EmailListLength; i++) {
             try {
                 await sleep(1000);
                 var inboxName = EmailListService.EmailList[i];
@@ -82,29 +83,43 @@ export class InboxQueueService implements IInboxQueueService{
     }
 
     private async handleFoundMatch(inbox: string): Promise<any> {
-        var rawData: any = await this.MailinatorHttpsManagerService.GetRawData(inbox);
+        try {
+            var rawData: any = await this.MailinatorHttpsManagerService.GetRawData(inbox);
 
-        var from = '"Mailinator Service" - ' + rawData.data.origfrom;
-        var subject = rawData.data.subject;
-        var html = rawData.data.parts[1].body;
-
-        InboxQueueService.NodeMailerContent = {
-            inbox: inbox,
-            from: from,
-            subject: subject,
-            html: html
-        };
-
-        this.MessageBus.emit(Notify.FoundMatch);
+            var from = '"Mailinator Service" - ' + rawData.data.origfrom;
+            var subject = rawData.data.subject;
+            var html = rawData.data.parts[1].body;
+    
+            InboxQueueService.NodeMailerContent = {
+                inbox: inbox,
+                from: from,
+                subject: subject,
+                html: html
+            };
+    
+            this.MessageBus.emit(Notify.FoundMatch);
+        } catch (err) {
+            console.log(err);
+        }
     }
 
     private restartPoll(): void {
-        console.log("Ended!");
-        this.Poll();
+        try {
+            console.log("Ended!");
+            this.Poll();
+        } catch(err) {
+            console.log(err);
+        }
     }
 
     private PopEmail(match: string): string[] {
-        this.EmailListService.Remove(match);
-        return EmailListService.EmailList;
+        try {
+            this.EmailListService.Remove(match);
+            InboxQueueService.EmailListLength = EmailListService.EmailList.length;
+            return EmailListService.EmailList;
+        } catch (err) {
+            console.log(err);
+            return EmailListService.EmailList;
+        }
     }
 }
