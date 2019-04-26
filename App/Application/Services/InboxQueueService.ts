@@ -76,7 +76,7 @@ export class InboxQueueService implements IInboxQueueService{
                     this.PopEmail(inboxName);
                 } 
 
-                if (i === EmailListService.EmailList.length-1 && InboxQueueService.IsRunning) this.restartPoll();
+                //if (i === EmailListService.EmailList.length-1 && InboxQueueService.IsRunning) this.restartPoll();
             } catch (err) {
                 console.log(err);
             }           
