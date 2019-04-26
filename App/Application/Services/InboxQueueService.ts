@@ -65,6 +65,7 @@ export class InboxQueueService implements IInboxQueueService{
         for(var i = 0; i < InboxQueueService.EmailListLength; i++) {
             try {
                 await sleep(1000);
+                if (i === 0) console.log(EmailListService.EmailList.length + " + " + InboxQueueService.EmailListLength);
                 var inboxName = EmailListService.EmailList[i];
                 console.log(inboxName);
                 console.log("Index: " + i);
