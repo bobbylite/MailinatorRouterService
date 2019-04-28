@@ -81,7 +81,7 @@ export class InboxQueueService implements IInboxQueueService{
                 console.log(err);
             }           
         }
-        if (!InboxQueueService.IsRunning) return;
+        //if (!InboxQueueService.IsRunning) return;
         this.restartPoll();
     }
 
