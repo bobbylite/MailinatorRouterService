@@ -74,4 +74,8 @@ export class Builder {
     }
 }
 
-Builder.Boostrap();
+try {
+    Builder.Boostrap();
+} catch (err) {
+    console.log(err);
+}

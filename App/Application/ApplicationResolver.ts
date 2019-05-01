@@ -28,9 +28,7 @@ export class ApplicationResolver implements IApplicationResolver {
         @inject(Types.INodeMailerHandler) private NodeMailerHandler: INodeMailerHandler
     ) {
         this.app = express();
-        this.InitializeServer();
         this.OnStart();
-        this.TestHttps();
     }
 
     private async TestHttps() : Promise<void> {
