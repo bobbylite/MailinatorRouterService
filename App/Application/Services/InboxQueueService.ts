@@ -71,27 +71,27 @@ export class InboxQueueService implements IInboxQueueService{
                 console.log("Index: " + i);
 
                 var htmlContent: string = await this.MailinatorHttpsManagerService.FindMatchingInboxSubject(SubjectIdentifier, inboxName);
+                //console.log(htmlContent);
                 if (htmlContent !== NoMatchFound){
-                    this.handleFoundMatch(inboxName);
+                    this.handleFoundMatch(inboxName, htmlContent);
                     this.PopEmail(inboxName);
                 } 
 
-                //if (i === EmailListService.EmailList.length-1 && InboxQueueService.IsRunning) this.restartPoll();
             } catch (err) {
                 console.log(err);
             }           
         }
-        //if (!InboxQueueService.IsRunning) return;
+
         this.restartPoll();
     }
 
-    private async handleFoundMatch(inbox: string): Promise<any> {
+    private async handleFoundMatch(inbox: string, emailContext: string): Promise<any> {
         try {
-            var rawData: any = await this.MailinatorHttpsManagerService.GetRawData(inbox);
+            var rawData: any = await this.MailinatorHttpsManagerService.GetRawMessageData(SubjectIdentifier, inbox);
 
-            var from = '"Mailinator Service" - ' + rawData.data.origfrom;
-            var subject = rawData.data.subject;
-            var html = rawData.data.parts[1].body;
+            var from = '"Mailinator Service" - ' + rawData.messages[0].origfrom;
+            var subject = rawData.messages[0].subject;
+            var html = emailContext;
     
             InboxQueueService.NodeMailerContent = {
                 inbox: inbox,

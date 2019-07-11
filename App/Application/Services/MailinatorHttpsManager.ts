@@ -29,6 +29,15 @@ export class MailinatorHttpsManagerService implements IMailinatorHttpsManagerSer
         return (inboxMessageJson.filterResult) ? await this.getMatchedHtml(inboxMessageJson): NoMatchFound;
     }
 
+    public async GetRawMessageData(subject: string, inbox: string) : Promise<any> {
+        var asyncJson: any;
+        var inboxMessageJson: IGetInboxMessagesJson
+        asyncJson = await this.GetInboxMessagesJson(inbox, subject);
+        inboxMessageJson = asyncJson;
+
+        return (inboxMessageJson.filterResult) ? await inboxMessageJson : NoMatchFound;
+    }
+
     public async GetInboxMessagesJson(inboxName: string, filter?: string) : Promise<IGetInboxMessagesJson> {
         let mailinatorPath: string = this.ReadInboxroot.concat(inboxName).concat(this.token);
         return await this.RequestInboxMessages('api.mailinator.com', 443, mailinatorPath, 'GET', filter);
@@ -114,6 +123,7 @@ export class MailinatorHttpsManagerService implements IMailinatorHttpsManagerSer
             inboxMessages.messages.forEach(async (msg: IInboxMessage) => {
                 var readMessage: any= await this.ReadMessage(msg.id, true);
                 //console.log("\x1b[1m", readMessage);
+                //console.log("\x1b[1m", msg.id);
                 resolve(readMessage);
             });
         });
