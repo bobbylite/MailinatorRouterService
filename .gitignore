@@ -9,3 +9,6 @@ build/
 /App/Model/FilePath.ts 
 /App/Model/MailiantorApiKey.ts 
 /App/Model/NodeMailerSenderAccount.ts 
+
+StartService.bat 
+.vs/
